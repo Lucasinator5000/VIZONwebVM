@@ -304,9 +304,20 @@
 			{type:"dir", dev:documentsDevice, path:"/home/user/documents"}
 		];
 		try
-		{
-			cx = await CheerpX.Linux.create({mounts: mountPoints, networkInterface: networkInterface});
-		}
+        {
+            // Phase 1: Pass the custom Wasm memory footprint if defined in our configObj
+            cx = await CheerpX.Linux.create({
+                memory: configObj.cxMemory || null, // Gracefully defaults if not present
+                mounts: mountPoints, 
+                networkInterface: networkInterface
+            });
+        }
+        catch(e)
+        {
+            printMessage(errorMessage);
+            printMessage([e.toString()]);
+            return;
+        }
 		catch(e)
 		{
 			printMessage(errorMessage);
