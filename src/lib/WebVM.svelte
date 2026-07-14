@@ -303,11 +303,17 @@
 			// Convenient access to sample documents in the user directory
 			{type:"dir", dev:documentsDevice, path:"/home/user/documents"}
 		];
-		try
+try
         {
-            // Phase 1: Pass the custom Wasm memory footprint if defined in our configObj
+            // Force 2 GB (32,768 Wasm pages) directly inside the initialization engine
+            const forcedMemory = new WebAssembly.Memory({
+                initial: 32768,
+                maximum: 32768,
+                shared: true // Required for multithreaded SharedArrayBuffer execution
+            });
+
             cx = await CheerpX.Linux.create({
-                memory: configObj.cxMemory || null, // Gracefully defaults if not present
+                memory: forcedMemory, 
                 mounts: mountPoints, 
                 networkInterface: networkInterface
             });
